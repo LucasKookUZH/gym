@@ -102,6 +102,8 @@ class BlackjackEnv(gym.Env):
             reward = cmp(score(self.player), score(self.dealer))
             if reward == 1:
                 reward = 2
+            if reward == -1:
+                reward = -2
         else:  # stick: play out the dealers hand, and score
             done = True
             while sum_hand(self.dealer) < 17:
