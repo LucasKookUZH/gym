@@ -138,6 +138,11 @@ register(
 )
 
 register(
+    id='Blackjack-v1',
+    entry_point='gym.envs.toy_text:BlackjackEnv1',
+)
+
+register(
     id='KellyCoinflip-v0',
     entry_point='gym.envs.toy_text:KellyCoinflipEnv',
     reward_threshold=246.61,

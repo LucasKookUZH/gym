@@ -39,7 +39,7 @@ def is_natural(hand):  # Is this hand a natural blackjack?
     return sorted(hand) == [1, 10]
 
 
-class BlackjackEnv(gym.Env):
+class BlackjackEnv1(gym.Env):
     """Simple blackjack environment
     Blackjack is a card game where the goal is to obtain cards that sum to as
     near as possible to 21 without going over.  They're playing against a fixed
@@ -65,7 +65,7 @@ class BlackjackEnv(gym.Env):
     http://incompleteideas.net/book/the-book-2nd.html
     """
     def __init__(self, natural=False):
-        self.action_space = spaces.Discrete(2)
+        self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Tuple((
             spaces.Discrete(32),
             spaces.Discrete(11),
@@ -84,14 +84,26 @@ class BlackjackEnv(gym.Env):
 
     def step(self, action):
         assert self.action_space.contains(action)
-        if action:  # hit: add a card to players hand and return
+        if action == 1:  # hit: add a card to players hand and return
             self.player.append(draw_card(self.np_random))
             if is_bust(self.player):
                 done = True
                 reward = -1
-            else:
+            elif action == 0:
                 done = False
                 reward = 0
+        if action == 2:  # double down: add a card to players hand and end
+            self.player.append(draw_card(self.np_random))
+            done = True
+            if is_bust(self.player):
+                reward = -2
+            while sum_hand(self.dealer) < 17:
+                self.dealer.append(draw_card(self.np_random))
+            reward = cmp(score(self.player), score(self.dealer))
+            if reward == 1:
+                reward = 2
+            if reward == -1:
+                reward = -2
         else:  # stick: play out the dealers hand, and score
             done = True
             while sum_hand(self.dealer) < 17:
